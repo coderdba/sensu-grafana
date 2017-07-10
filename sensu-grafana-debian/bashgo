@@ -1,0 +1,8 @@
+#docker exec -it dddd /bin/bash
+
+#sen-graf
+docker exec -it 7df6437600b9 /bin/bash
+
+#ubuntu
+#docker exec -it 8290bfdc309c /bin/bash
+

@@ -1,0 +1,130 @@
+Sending build context to Docker daemon 557.1 kBSending build context to Docker daemon 1.114 MBSending build context to Docker daemon 1.671 MBSending build context to Docker daemon 2.228 MBSending build context to Docker daemon 2.242 MB
+Step 1 : FROM debian:jessie
+ ---> 62a932a5c143
+Step 2 : EXPOSE 3000 8080
+ ---> Using cache
+ ---> a6ae79dfabe8
+Step 3 : COPY service_start.sh /root/service_start.sh
+ ---> Using cache
+ ---> 42c9cd021b7f
+Step 4 : RUN chmod +x /root/service_start.sh
+ ---> Using cache
+ ---> 25de0042adde
+Step 5 : RUN apt-get update && apt-get install -y wget && apt-get install -y build-essential && apt-get install -y curl && apt-get install -y apt-transport-https
+ ---> Using cache
+ ---> c0a4dbc78fdf
+Step 6 : RUN apt-get install -y sudo
+ ---> Using cache
+ ---> 6fe2467a7314
+Step 7 : RUN wget -q http://sensu.global.ssl.fastly.net/apt/pubkey.gpg -O- | sudo apt-key add -
+ ---> Using cache
+ ---> 6ba61f048481
+Step 8 : RUN echo "deb http://sensu.global.ssl.fastly.net/apt sensu main" | tee /etc/apt/sources.list.d/sensu.list && apt-get update && apt-get install -y sensu
+ ---> Using cache
+ ---> 2f9167ab6e8a
+Step 9 : COPY client.json /etc/sensu/conf.d/client.json
+ ---> Using cache
+ ---> 85addb52dd51
+Step 10 : COPY transport.json /etc/sensu/conf.d/transport.json
+ ---> Using cache
+ ---> dfb84e37a89a
+Step 11 : COPY api.json /etc/sensu/conf.d/api.json
+ ---> Using cache
+ ---> 7032a5202470
+Step 12 : RUN apt-get -y install redis-server
+ ---> Using cache
+ ---> 39c3c5003ec7
+Step 13 : COPY redis.json /etc/sensu/conf.d/redis.json
+ ---> Using cache
+ ---> f598938f966e
+Step 14 : RUN wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && dpkg -i erlang-solutions_1.0_all.deb && apt-get update && apt-get -y install erlang-nox
+ ---> Using cache
+ ---> a64198b0b90f
+Step 15 : RUN apt-get install -y logrotate && wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.0/rabbitmq-server_3.6.0-1_all.deb && dpkg -i rabbitmq-server_3.6.0-1_all.deb
+ ---> Using cache
+ ---> 8277770a71c9
+Step 16 : COPY rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
+ ---> Using cache
+ ---> 6c5c2a24ce16
+Step 17 : RUN echo STARTING SERVICES at `date` >> /tmp/start_services.out 2>> /tmp/start_services.out
+ ---> Using cache
+ ---> f62d80f366b1
+Step 18 : RUN service sensu-server start && service sensu-client start && service rabbitmq-server start && service redis-server start && service sensu-api start
+ ---> Using cache
+ ---> 105d6e467afb
+Step 19 : RUN service rabbitmq-server start && rabbitmqctl add_vhost /sensu && rabbitmqctl add_user sensu secret  && rabbitmqctl set_permissions -p /sensu sensu ".*" ".*" ".*"
+ ---> Using cache
+ ---> 8dad8f5128e1
+Step 20 : RUN apt-get install -y uchiwa
+ ---> Using cache
+ ---> 853852180504
+Step 21 : COPY uchiwa.json /etc/sensu/uchiwa.json
+ ---> Using cache
+ ---> a9b72fb34025
+Step 22 : RUN service uchiwa start
+ ---> Using cache
+ ---> 2694c4c3eb07
+Step 23 : ENV PATH /opt/sensu/embedded/bin:$PATH
+ ---> Using cache
+ ---> cc1490335489
+Step 24 : RUN sensu-install -p cpu-checks && /opt/sensu/embedded/bin/sensu-install -p disk-checks && /opt/sensu/embedded/bin/sensu-install -p memory-checks && /opt/sensu/embedded/bin/sensu-install -p nginx && /opt/sensu/embedded/bin/sensu-install -p process-checks && /opt/sensu/embedded/bin/sensu-install -p load-checks && /opt/sensu/embedded/bin/sensu-install -p vmstats && /opt/sensu/embedded/bin/sensu-install -p mailer
+ ---> Using cache
+ ---> bf138b0ef862
+Step 25 : COPY check_cpu_linux.json /etc/sensu/conf.d/check_cpu_linux.json
+ ---> Using cache
+ ---> 7e567f332038
+Step 26 : COPY check_memory_linux.json /etc/sensu/conf.d/check_memory_linux.json
+ ---> Using cache
+ ---> e03ab8fe2932
+Step 27 : COPY check_disk_usage_linux.json /etc/sensu/conf.d/check_disk_usage_linux.json
+ ---> Using cache
+ ---> 3749c1f44616
+Step 28 : RUN DEBIAN_FRONTEND=noninteractive apt-get install -y postfix && cp /usr/share/postfix/main.cf.debian /etc/postfix/main.cf && /etc/init.d/postfix reload
+ ---> Using cache
+ ---> dc24696a0726
+Step 29 : COPY handler_mail.json /etc/sensu/handler_mail.json
+ ---> Using cache
+ ---> 8ba75de0e76b
+Step 30 : COPY mailer.json /etc/sensu/mailer.json
+ ---> Using cache
+ ---> fe13a43464bd
+Step 31 : RUN update-rc.d sensu-server defaults && update-rc.d sensu-client defaults && update-rc.d sensu-api defaults && update-rc.d uchiwa defaults
+ ---> Using cache
+ ---> d021e9c827fa
+Step 32 : RUN DEBIAN_FRONTEND=noninteractive apt-get -q -y --force-yes install graphite-carbon && echo "CARBON_CACHE_ENABLED=true" > /etc/default/graphite-carbon && service carbon-cache start
+ ---> Using cache
+ ---> dd221dc48b0b
+Step 33 : RUN apt-get install -y graphite-web apache2 libapache2-mod-wsgi && chown _graphite /var/lib/graphite && sudo -u _graphite graphite-manage syncdb --noinput && rm -f /etc/apache2/sites-enabled/000-default.conf && cp /usr/share/graphite-web/apache2-graphite.conf /etc/apache2/sites-enabled/graphite.conf && service apache2 restart
+ ---> Using cache
+ ---> bde700b416db
+Step 34 : COPY grafana_stable.list /etc/apt/sources.list.d/grafana_stable.list
+ ---> Using cache
+ ---> 5d7f66bbb950
+Step 35 : RUN curl -k https://packagecloud.io/gpg.key | sudo apt-key add -
+ ---> Using cache
+ ---> e006fd743af0
+Step 36 : RUN curl -k -L https://packagecloud.io/grafana/stable/gpgkey | sudo apt-key add -
+ ---> Using cache
+ ---> 999348752475
+Step 37 : RUN apt-get install -y gnutls-bin
+ ---> Using cache
+ ---> 6aa3d86a5723
+Step 38 : RUN update-ca-certificates -v
+ ---> Using cache
+ ---> 40e59c5a8500
+Step 39 : RUN wget https://grafanarel.s3.amazonaws.com/builds/grafana_4.1.1-1484211277_amd64.deb && apt-get install -y adduser libfontconfig && dpkg -i grafana_4.1.1-1484211277_amd64.deb
+ ---> Using cache
+ ---> 4da93376618d
+Step 40 : RUN apt-get install -y git && git clone https://github.com/opinionlab/sensu-metrics-relay.git && cp -R sensu-metrics-relay/lib/sensu/extensions/* /etc/sensu/extensions/.
+ ---> Using cache
+ ---> b42ab1615e48
+Step 41 : COPY relay.json /etc/sensu/conf.d/relay.json
+ ---> Using cache
+ ---> c8807eedc3e6
+Step 42 : COPY metrics-vmstat.json /etc/sensu/conf.d/metrics-vmstat.json
+ ---> Using cache
+ ---> e6912830660f
+Step 43 : CMD /root/service_start.sh; tail -f /dev/null
+ ---> Using cache
+ ---> 9a910d0dac88
+Successfully built 9a910d0dac88

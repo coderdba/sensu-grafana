@@ -1,0 +1,3 @@
+#docker commit <container id>|<container name> <image repo name>
+#docker commit sengraf1 sengraf1.1
+docker commit sengraf1.1 sengraf1.2

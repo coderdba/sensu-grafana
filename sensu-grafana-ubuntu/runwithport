@@ -1,0 +1,1 @@
+docker run --name sengraf1.1 -it -p 8081:8080 -p 3001:3000 -d 614499deaaf1 tail -f /dev/null

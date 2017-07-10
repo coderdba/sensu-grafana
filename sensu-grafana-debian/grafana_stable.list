@@ -1,0 +1,4 @@
+deb https://packagecloud.io/grafana/stable/debian/ jessie main
+deb-src https://packagecloud.io/grafana/stable/debian/ jessie main
+#deb https://packagecloud.io/grafana/stable/ubuntu/ trusty main
+#deb-src https://packagecloud.io/grafana/stable/ubuntu/ trusty main

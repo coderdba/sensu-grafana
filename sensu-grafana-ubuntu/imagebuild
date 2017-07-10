@@ -1,0 +1,3 @@
+#docker build --no-cache -t sengraf:0.1 .
+#docker build --no-cache -t sengraf:0.2.1 .
+docker build  -t sengraf:0.2.1 .

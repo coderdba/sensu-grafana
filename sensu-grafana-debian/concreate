@@ -1,0 +1,1 @@
+docker run --name sengraf -it -d ubuntu:14.04 tail -f /dev/null
