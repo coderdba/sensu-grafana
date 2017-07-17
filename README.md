@@ -1,2 +1,1 @@
 # sensu-grafana
-# sensu-grafana

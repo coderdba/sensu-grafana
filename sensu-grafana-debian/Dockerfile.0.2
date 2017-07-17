@@ -8,10 +8,7 @@ EXPOSE 3000 8080
 
 # Copy service_start.sh - which is own custom 
 COPY service_start.sh /root/service_start.sh
-COPY service_stop.sh /root/service_stop.sh
-COPY service_restart.sh /root/service_restart.sh
-COPY con_startup.sh /root/con_startup.sh
-RUN chmod +x /root/service_start.sh && chmod +x /root/service_stop.sh && chmod +x /root/service_restart.sh && chmod +x /root/con_startup.sh
+RUN chmod +x /root/service_start.sh
 
 # Update apt repository
 # Install wget
@@ -168,5 +165,4 @@ COPY metrics-vmstat.json /etc/sensu/conf.d/metrics-vmstat.json
 
 #--------
 #CMD ["tail -f /dev/null"]
-#CMD ["/root/service_start.sh; tail -f /dev/null"]
-CMD ["/root/con_startup.sh"]
+CMD ["/root/service_start.sh; tail -f /dev/null"]

@@ -1,1 +1,5 @@
-docker run --name sengrafdeb -it -p 8081:8080 -p 3001:3000 -d 0758e61f358d tail -f /dev/null
+# ver < 0.3
+#docker run --name sengrafdeb -it -p 8081:8080 -p 3001:3000 -d 0758e61f358d tail -f /dev/null
+
+# ver 0.3
+docker run --name sengrafdeb3 -it -p 8081:8080 -p 3001:3000 -d dbc5515293d2  tail -f /dev/null
